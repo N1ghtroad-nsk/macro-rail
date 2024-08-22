@@ -37,6 +37,8 @@ void FastManualMode::display() {
 }
 
 void FastManualMode::changeGear(int gear) {
+  if (gear == m_gear)
+    return;
   m_gear = gear;
   if (m_gear == 0) {
       g_stepper.stop();
