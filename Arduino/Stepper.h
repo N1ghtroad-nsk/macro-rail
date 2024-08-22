@@ -106,7 +106,7 @@ public:
   bool endstop() {
     const bool hit = digitalRead(ENDSTOP) == LOW;
     if (!hit)
-      m_derattlingTmr = millis();
+      m_derattlingTime = millis();
     else if (millis() - m_derattlingTime > DERATTLING_DELAY || m_derattlingTime > millis())
       return true;
     return false;     
