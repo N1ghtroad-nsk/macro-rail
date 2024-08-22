@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include <TimerOne.h>
 
-#define DERATTLING_DELAY = 10
+#define DERATTLING_DELAY 10
 
 class Stepper {
 public:
