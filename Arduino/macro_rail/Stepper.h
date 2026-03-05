@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include <TimerOne.h>
 
-#define DERATTLING_DELAY 10
+#define DERATTLING_DELAY 100
 
 class Stepper {
 public:
@@ -84,7 +84,7 @@ public:
   void update() {
     if (m_steps == 0)
       return;
-    if (endstop() && m_steps > 0) {
+    if (endstop() && m_steps < 0) {
       m_endstopped = true;
       stop();
     }

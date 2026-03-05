@@ -25,7 +25,7 @@ void setup() {
   g_display.init();
   g_stepper.init();
 
-  g_encoder.setEncType(EB_STEP2);
+  g_encoder.setEncType(EB_STEP4_LOW);
 
   g_settings.photoSettings.loadFromEEPROM(g_photoSettingsAddress);
 

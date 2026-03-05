@@ -21,6 +21,6 @@ extern LiquidCrystal_I2C g_lcd;;
 extern Display1602 g_display;
 extern EncButton g_encoder;
 extern CameraT<CAM_FOCUS, CAM_SHOT> g_camera;
-extern StepperT<STEPP_ENA, STEPP_STEP, STEPP_DIR, STEPP_END, 16, 200, 3> g_stepper;
+extern StepperT<STEPP_ENA, STEPP_STEP, STEPP_DIR, STEPP_END, 32, 200, 4> g_stepper;
 extern Settings g_settings;
 extern const int g_photoSettingsAddress;
