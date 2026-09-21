@@ -49,9 +49,14 @@ void PhotoMode::nextStage() {
       initStage.start(m_fromPosition, m_fromPosition + g_stepper.mmToSteps(m_frameDepth*m_nFrames), g_settings.photoSettings.initSec, m_nFrames);
       break;
     case stLoop:
+      if (g_settings.photoSettings.useMirrorPreUp) {
+        m_currentStage = stPreUp;
+        m_currentStageWorker = &preUpStage;
+        preUpStage.start(50);
+        break;
+      }
       m_currentStage = stCalm;
     case stCalm:
-      g_camera.focus();
       m_currentStageWorker = &timeoutStage;
       timeoutStage.start(g_settings.photoSettings.calmMsec);
       break;

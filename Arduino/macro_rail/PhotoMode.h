@@ -59,6 +59,30 @@ private:
   bool m_overflow;
 };
 
+class PreUpStage : public TimeoutStage {
+public:
+  ~PreUpStage() {
+    g_camera.release();
+  }
+
+  void start(int timeout) override {
+    TimeoutStage::start(timeout);
+    g_camera.shot();
+  }
+
+  bool inProgress() override {
+    if (!TimeoutStage::inProgress()) {
+      g_camera.release();
+      return false;
+    }
+    return true;
+  }
+
+  void cancel() override {
+    g_camera.release();
+  }
+};
+
 class MoveStage : public PhotoStage {
 public:
   void cancel() override {
@@ -78,6 +102,7 @@ public:
       message = F("Endstop");
       return true;
     }
+    return false;
   }
 };
 
@@ -155,6 +180,7 @@ protected:
 
 private:
   enum Stage {
+    stPreUp,
     stCalm,
     stExposure,
     stCountMove,
@@ -166,6 +192,7 @@ private:
   InitStage initStage;
   TimeoutStage timeoutStage;
   ExposureStage exposureStage;
+  PreUpStage preUpStage;
   MoveStage moveStage;
   
   PhotoStage * m_currentStageWorker;

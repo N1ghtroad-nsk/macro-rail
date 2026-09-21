@@ -5,6 +5,7 @@ struct PhotoSettings {
   int calmMsec = 800;
   int initSec = 5;
   float frameDepth = 0.1f;
+  bool useMirrorPreUp = true;
 
   void saveToEEPROM(int addr);
 
