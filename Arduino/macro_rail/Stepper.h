@@ -3,8 +3,6 @@
 #include <Arduino.h>
 #include <TimerOne.h>
 
-#define DERATTLING_DELAY 10
-
 class Stepper {
 public:
   virtual void init() = 0;    
@@ -104,12 +102,7 @@ public:
   };
 
   bool endstop() {
-    const bool hit = digitalRead(ENDSTOP) == LOW;
-    if (!hit)
-      m_derattlingTime = millis();
-    else if (millis() - m_derattlingTime > DERATTLING_DELAY || m_derattlingTime > millis())
-      return true;
-    return false;     
+    return digitalRead(ENDSTOP) == LOW;
   }
 
   bool endstopHit() override {
@@ -142,5 +135,4 @@ private:
   bool m_stepPin;
   bool m_infinite;
   bool m_endstopped;
-  long m_derattlingTime = 0;
 };

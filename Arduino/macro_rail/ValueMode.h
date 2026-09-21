@@ -6,7 +6,7 @@
 template <typename T>
 class ValueMode : public ModeEnc {
 public:
-  ValueMode(const String & title, const String & unit, T & value, T step) :
+  ValueMode(const __FlashStringHelper * title, const __FlashStringHelper * unit, T & value, T step) :
     ModeEnc(title),
     m_unit(unit),
     m_value(value),
@@ -31,15 +31,15 @@ public:
 
 protected:
   virtual void display() {
-    String msg;
-    msg.reserve(16);
-    msg += m_currentValue;
-    msg += " " + m_unit;
-    displayValue(msg);
+    BufPrint b;
+    b.print(m_currentValue);
+    b.print(' ');
+    b.print(m_unit);
+    displayValue(b.buf);
   }
 
 protected:
-  String m_unit;
+  const __FlashStringHelper * m_unit;
   T & m_value;
   T m_currentValue;
   T m_step;

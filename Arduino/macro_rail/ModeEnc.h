@@ -5,7 +5,7 @@
 
 class ModeEnc : public Mode {
 public:
-  ModeEnc(const String & title);
+  ModeEnc(const __FlashStringHelper * title);
   virtual void updateImpl() override;
 
 protected:

@@ -7,12 +7,12 @@
 class SaveMode : public ModeEnc {
 public:
   SaveMode() :
-    ModeEnc("Save settings")
+    ModeEnc(F("Save settings"))
   {
   }
 
   void initImpl() {
     g_settings.photoSettings.saveToEEPROM(g_photoSettingsAddress);
-    displayValue("Done!");
+    displayValue(F("Done!"));
   }
 };

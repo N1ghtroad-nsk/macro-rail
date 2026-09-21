@@ -7,7 +7,7 @@
 
 class MenuMode : public ModeEnc {
 public:
-  MenuMode(const String & title);
+  MenuMode(const __FlashStringHelper * title);
   virtual ~MenuMode();
   virtual void finalize();
   void insertMode(Mode * newMode);

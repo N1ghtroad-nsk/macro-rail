@@ -5,7 +5,7 @@
 
 class BoolMode : public ModeEnc {
 public:
-  BoolMode(const String & title, bool & value) :
+  BoolMode(const __FlashStringHelper * title, bool & value) :
     ModeEnc(title),
     m_value(value)
   {
