@@ -1,9 +1,10 @@
 #pragma once
 
 struct PhotoSettings {
-  int exposureMsec = 200;
-  int calmMsec = 800;
-  int initSec = 5;
+  unsigned int exposureMsec = 200;
+  unsigned int calmMsec = 800;
+  unsigned int initSec = 5;
+  unsigned int cameraShotDelay = 200;
   float frameDepth = 0.1f;
   bool useMirrorPreUp = true;
 

@@ -20,7 +20,7 @@ void FastManualMode::updateImpl() {
 }
 
 void FastManualMode::onTurn(int dir) {
-  changeGear(m_gear - dir);
+  changeGear(m_gear + dir);
 }
 
 void FastManualMode::onClick() {

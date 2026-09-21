@@ -48,15 +48,13 @@ void PhotoMode::nextStage() {
       initStage.start(m_fromPosition, m_fromPosition + g_stepper.mmToSteps(m_frameDepth*m_nFrames), g_settings.photoSettings.initSec, m_nFrames);
       break;
     case stLoop:
-      if (g_settings.photoSettings.useMirrorPreUp) {
-        m_currentStage = stPreUp;
-        m_currentStageWorker = &preUpStage;
-        preUpStage.start(50);
-        break;
-      }
       m_currentStage = stCalm;
     case stCalm:
       m_currentStageWorker = &timeoutStage;
+      // mirror pre-up: shot() raises the lines and returns at once,
+      // Camera::update() from loop() releases them; settling window counts from the press
+      if (g_settings.photoSettings.useMirrorPreUp)
+        g_camera.shot(g_settings.photoSettings.cameraShotDelay);
       timeoutStage.start(g_settings.photoSettings.calmMsec);
       break;
     case stExposure:
@@ -80,7 +78,6 @@ void PhotoMode::nextStage() {
 }
 
 void PhotoMode::stopProcess(const __FlashStringHelper * reason) {
-  g_camera.release();
   m_currentStageWorker->cancel();
   m_currentStage = stDone;
   if (reason != nullptr)

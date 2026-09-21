@@ -15,7 +15,14 @@ public:
   }
 
   void onTurn(int dir) {
-    m_currentValue += m_step * dir;
+    if (dir > 0) {
+      m_currentValue += m_step;
+    } else if (m_currentValue >= m_step) {
+      m_currentValue -= m_step;
+    } else {
+      // block wrap-around through zero (important for unsigned T)
+      m_currentValue = 0;
+    }
     display();
   }
 

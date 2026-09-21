@@ -31,55 +31,11 @@ private:
 
 class ExposureStage : public TimeoutStage {
 public:
-  ~ExposureStage() {
-    g_camera.release();
-  }
-
+  // shot() returns immediately (lines raised), so the timeout is armed
+  // right AFTER it: the exposure window is counted from the moment of the press
   void start(int timeout) override {
+    g_camera.shot(g_settings.photoSettings.cameraShotDelay);
     TimeoutStage::start(timeout);
-    long current = millis();
-    m_relmillis = current + 10;
-    m_overflow = m_relmillis < current;
-    g_camera.shot();
-  }
-
-  bool inProgress() override {
-    long current = millis();
-    if (m_overflow ? m_relmillis > current : m_relmillis < current)
-      g_camera.release();
-    return TimeoutStage::inProgress();
-  }
-
-  void cancel() override {
-    g_camera.release();
-  }
-
-private:
-  long m_relmillis;
-  bool m_overflow;
-};
-
-class PreUpStage : public TimeoutStage {
-public:
-  ~PreUpStage() {
-    g_camera.release();
-  }
-
-  void start(int timeout) override {
-    TimeoutStage::start(timeout);
-    g_camera.shot();
-  }
-
-  bool inProgress() override {
-    if (!TimeoutStage::inProgress()) {
-      g_camera.release();
-      return false;
-    }
-    return true;
-  }
-
-  void cancel() override {
-    g_camera.release();
   }
 };
 
@@ -176,7 +132,6 @@ protected:
 
 private:
   enum Stage {
-    stPreUp,
     stCalm,
     stExposure,
     stCountMove,
@@ -188,7 +143,6 @@ private:
   InitStage initStage;
   TimeoutStage timeoutStage;
   ExposureStage exposureStage;
-  PreUpStage preUpStage;
   MoveStage moveStage;
   
   PhotoStage * m_currentStageWorker;

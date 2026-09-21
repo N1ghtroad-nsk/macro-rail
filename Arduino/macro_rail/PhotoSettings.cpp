@@ -1,7 +1,7 @@
 #include "PhotoSettings.h"
 #include "Globals.h"
 #include <EEPROM.h>
-#define CURRENT_VERSION 4
+#define CURRENT_VERSION 5
 
 void PhotoSettings::saveToEEPROM(int addr) {
   EEPROM.put(addr, CURRENT_VERSION);
@@ -16,8 +16,7 @@ void PhotoSettings::loadFromEEPROM(int addr) {
 }
 
 void Settings::finalize() {
-  // кадров на одно больше, чем интервалов: снимаем и в начальной, и в конечной точке включительно;
-  // epsilon защищает от погрешности float (напр. 9.99997 вместо 10.0)
+  // frame count is intervals + 1: shooting at both start and end positions inclusive;
   float intervals = 0;
   if (photoSettings.frameDepth != 0)
     intervals = abs(g_stepper.stepsToMm(toPosition) / photoSettings.frameDepth);
