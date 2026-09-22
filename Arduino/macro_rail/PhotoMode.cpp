@@ -2,8 +2,7 @@
 
 PhotoMode::PhotoMode() 
   : ModeEnc(F("Start"))
-{
-}
+{}
 
 void PhotoMode::initImpl() {
   g_settings.finalize();

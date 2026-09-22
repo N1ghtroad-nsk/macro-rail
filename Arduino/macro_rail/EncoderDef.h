@@ -10,4 +10,5 @@
 #define EB_HOLD_TIME 600    // hold timeout (button)
 #define EB_STEP_TIME 200    // pulsed hold timeout (button)
 #define EB_FAST_TIME 30     // fast rotation timeout (encoder)
+
 #include <EncButton.h>
