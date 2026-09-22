@@ -2,9 +2,7 @@
 
 PhotoMode::PhotoMode() 
   : ModeEnc(F("Start"))
-{
-  m_message.reserve(10);
-}
+{}
 
 void PhotoMode::initImpl() {
   g_settings.finalize();
@@ -18,7 +16,7 @@ void PhotoMode::initImpl() {
 
   m_currentStage = Stage::stDone;
   m_framesShot = 0;
-  m_message = "";
+  m_message = nullptr;
   
   g_stepper.enable();
   display();
@@ -33,7 +31,7 @@ void PhotoMode::updateImpl() {
   if (m_currentStageWorker->inProgress())
     return;
 
-  String errorMsg;
+  const __FlashStringHelper * errorMsg = nullptr;
   if (m_currentStageWorker->isBroken(errorMsg))
     stopProcess(errorMsg);
   else
@@ -51,8 +49,11 @@ void PhotoMode::nextStage() {
     case stLoop:
       m_currentStage = stCalm;
     case stCalm:
-      g_camera.focus();
       m_currentStageWorker = &timeoutStage;
+      // mirror pre-up: shot() raises the lines and returns at once,
+      // Camera::update() from loop() releases them; settling window counts from the press
+      if (g_settings.photoSettings.useMirrorPreUp)
+        g_camera.shot(g_settings.photoSettings.cameraShotDelay);
       timeoutStage.start(g_settings.photoSettings.calmMsec);
       break;
     case stExposure:
@@ -63,7 +64,7 @@ void PhotoMode::nextStage() {
     case stCountMove:
       m_framesShot++;
       if (m_framesShot >= m_nFrames) {
-        stopProcess("Done!");
+        stopProcess(F("Done!"));
       } else {
         m_currentStageWorker = &moveStage;
         moveStage.start(m_frameDepth);
@@ -75,11 +76,10 @@ void PhotoMode::nextStage() {
   }
 }
 
-void PhotoMode::stopProcess(const String & reason) {
-  g_camera.release();
+void PhotoMode::stopProcess(const __FlashStringHelper * reason) {
   m_currentStageWorker->cancel();
   m_currentStage = stDone;
-  if (reason.length() > 0)
+  if (reason != nullptr)
     m_message = reason;
   display();
 }
@@ -108,13 +108,13 @@ void PhotoMode::onClick() {
 
       m_currentStage = Stage::stDone;
       m_framesShot = 0;
-      m_message = "";
+      m_message = nullptr;
       m_addition = 0;
       display();
       nextStage();
     }
   } else
-    stopProcess("Stop");
+    stopProcess(F("Stop"));
 }
 
 void PhotoMode::onTurn(int dir) {
@@ -125,21 +125,20 @@ void PhotoMode::onTurn(int dir) {
 }
 
 void PhotoMode::display() {
-  String msg;
-  msg.reserve(16);
+  BufPrint b;
   if (m_addition == 0) {
-    msg += m_framesShot;
-    msg += " of ";
-    msg += m_nFrames;
+    b.print(m_framesShot);
+    b.print(F(" of "));
+    b.print(m_nFrames);
 
-    if (m_message.length() > 0) {
-      msg += ": ";
-      msg += m_message;
+    if (m_message != nullptr) {
+      b.print(F(": "));
+      b.print(m_message);
     }
   } else {
-    msg += "extra ";
-    msg += m_addition;
+    b.print(F("extra "));
+    b.print(m_addition);
   }
-    
-  displayValue(msg);
+
+  displayValue(b.buf);
 }

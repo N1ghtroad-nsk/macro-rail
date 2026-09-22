@@ -5,12 +5,12 @@
 class FreeMode : public ModeEnc {
 public:
   FreeMode() :
-    ModeEnc("Free stepper")
+    ModeEnc(F("Free stepper"))
   {
   }
 
   virtual void initImpl() {
     g_stepper.disable();
-    displayValue("Done!");
+    displayValue(F("Done!"));
   }
 };

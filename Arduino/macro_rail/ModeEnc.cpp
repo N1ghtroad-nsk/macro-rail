@@ -1,7 +1,7 @@
 #include "ModeEnc.h"
 #include "Globals.h"
 
-ModeEnc::ModeEnc(const String & title) :
+ModeEnc::ModeEnc(const __FlashStringHelper * title) :
   Mode(title)
 {
 }

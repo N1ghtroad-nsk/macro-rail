@@ -5,7 +5,7 @@
 
 class FastManualMode : public ModeEnc {
 public:
-  FastManualMode(const String & title);
+  FastManualMode(const __FlashStringHelper * title);
   void initImpl();
   void updateImpl() override;
 

@@ -1,7 +1,7 @@
 #include "FastManualMode.h"
 #include "Globals.h"
 
-FastManualMode::FastManualMode(const String & title) :
+FastManualMode::FastManualMode(const __FlashStringHelper * title) :
   ModeEnc(title)
 {
 
@@ -20,7 +20,7 @@ void FastManualMode::updateImpl() {
 }
 
 void FastManualMode::onTurn(int dir) {
-  changeGear(m_gear - dir);
+  changeGear(m_gear + dir);
 }
 
 void FastManualMode::onClick() {
@@ -29,11 +29,10 @@ void FastManualMode::onClick() {
 }
 
 void FastManualMode::display() {
-  String msg;
-  msg.reserve(16);
-  msg += m_rpms[abs(m_gear)];
-  msg += " rpm";
-  displayValue(msg);
+  BufPrint b;
+  b.print(m_rpms[abs(m_gear)]);
+  b.print(F(" rpm"));
+  displayValue(b.buf);
 }
 
 void FastManualMode::changeGear(int gear) {

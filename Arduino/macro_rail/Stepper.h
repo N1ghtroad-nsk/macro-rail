@@ -84,7 +84,7 @@ public:
   void update() {
     if (m_steps == 0)
       return;
-    if (endstop() && m_steps < 0) {
+    if (endstop() && m_steps > 0) {
       m_endstopped = true;
       stop();
     }

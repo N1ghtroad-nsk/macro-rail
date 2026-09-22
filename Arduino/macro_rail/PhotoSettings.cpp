@@ -1,7 +1,7 @@
 #include "PhotoSettings.h"
 #include "Globals.h"
 #include <EEPROM.h>
-#define CURRENT_VERSION 3
+#define CURRENT_VERSION 5
 
 void PhotoSettings::saveToEEPROM(int addr) {
   EEPROM.put(addr, CURRENT_VERSION);
@@ -16,7 +16,9 @@ void PhotoSettings::loadFromEEPROM(int addr) {
 }
 
 void Settings::finalize() {
-  nFrames = abs(g_stepper.stepsToMm(toPosition) / photoSettings.frameDepth);
-  if (nFrames == 0)
-    nFrames = 1;
+  // frame count is intervals + 1: shooting at both start and end positions inclusive;
+  float intervals = 0;
+  if (photoSettings.frameDepth != 0)
+    intervals = abs(g_stepper.stepsToMm(toPosition) / photoSettings.frameDepth);
+  nFrames = int(intervals + 0.001) + 1;
 }

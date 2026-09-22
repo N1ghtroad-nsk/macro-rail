@@ -11,6 +11,7 @@
 #include "PhotoMode.h"
 #include "SaveMode.h"
 #include "ValueMode.h"
+#include "BoolMode.h"
 #include "FreeMode.h"
 
 MainMenu g_mainMenu;
@@ -40,8 +41,10 @@ void setup() {
   g_mainMenu.insertMode(new FreeMode());
 
   settingsMenu->insertMode(new ValueMode<float>(F("Frame depth"), F("mm"), g_settings.photoSettings.frameDepth, 0.01));
-  settingsMenu->insertMode(new ValueMode<int>(F("Calm time"), F("mSec"), g_settings.photoSettings.calmMsec, 10));
-  settingsMenu->insertMode(new ValueMode<int>(F("Exposure time"), F("mSec"), g_settings.photoSettings.exposureMsec, 10));
+  settingsMenu->insertMode(new ValueMode<unsigned int>(F("Calm time"), F("mSec"), g_settings.photoSettings.calmMsec, 10));
+  settingsMenu->insertMode(new ValueMode<unsigned int>(F("Exposure time"), F("mSec"), g_settings.photoSettings.exposureMsec, 10));
+  settingsMenu->insertMode(new ValueMode<unsigned int>(F("Camera delays"), F("mSec"), g_settings.photoSettings.cameraShotDelay, 10));
+  settingsMenu->insertMode(new BoolMode(F("Mirror PreUp"), g_settings.photoSettings.useMirrorPreUp));
 
   settingsMenu->insertMode(new SaveMode());
 
@@ -57,4 +60,5 @@ void setup() {
 void loop() {
   g_encoder.tick();
   g_mainMenu.update();
+  g_camera.update();
 }

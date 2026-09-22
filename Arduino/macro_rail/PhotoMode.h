@@ -7,7 +7,7 @@
 class PhotoStage {
 public:
   virtual bool inProgress() = 0;
-  virtual bool isBroken(String & message) {return false;}
+  virtual bool isBroken(const __FlashStringHelper * & message) {return false;}
   virtual void cancel() {}
 };
 
@@ -31,32 +31,12 @@ private:
 
 class ExposureStage : public TimeoutStage {
 public:
-  ~ExposureStage() {
-    g_camera.release();
-  }
-
+  // shot() returns immediately (lines raised), so the timeout is armed
+  // right AFTER it: the exposure window is counted from the moment of the press
   void start(int timeout) override {
+    g_camera.shot(g_settings.photoSettings.cameraShotDelay);
     TimeoutStage::start(timeout);
-    long current = millis();
-    m_relmillis = current + 10;
-    m_overflow = m_relmillis < current;
-    g_camera.shot();
   }
-
-  bool inProgress() override {
-    long current = millis();
-    if (m_overflow ? m_relmillis > current : m_relmillis < current)
-      g_camera.release();
-    return TimeoutStage::inProgress();
-  }
-
-  void cancel() override {
-    g_camera.release();
-  }
-
-private:
-  long m_relmillis;
-  bool m_overflow;
 };
 
 class MoveStage : public PhotoStage {
@@ -73,26 +53,24 @@ public:
     return g_stepper.stepsLeft() != 0;
   }
 
-  bool isBroken(String & message) override {
+  bool isBroken(const __FlashStringHelper * & message) override {
     if (g_stepper.endstopHit()) {
       message = F("Endstop");
       return true;
     }
+    return false;
   }
 };
 
 class InitStage : public MoveStage {
 public:
-  InitStage () {
-    m_displaySettings.reserve(11);
-  }
-
   void start(long fromPosition, long toPosition, int timeoutSecs, int frames) {
-    m_displaySettings = "";
-    m_displaySettings += abs(g_stepper.stepsToMm(toPosition - fromPosition));
-    m_displaySettings += F("mm,");
-    m_displaySettings += abs(int(frames));
-    m_displaySettings += F("f");
+    BufPrint b;
+    b.print(abs(g_stepper.stepsToMm(toPosition - fromPosition)));
+    b.print(F("mm,"));
+    b.print(abs(int(frames)));
+    b.print(F("f"));
+    strlcpy(m_displaySettings, b.buf, sizeof(m_displaySettings));
 
     m_secsLeft = timeoutSecs;
 
@@ -125,18 +103,17 @@ public:
   }
 
   void display() {
-    String msg;
-    msg.reserve(16);
-    msg += m_displaySettings;
+    BufPrint b;
+    b.print(m_displaySettings);
     for (int i = 0; i < m_secsLeft; ++i)
-      msg += ".";
-    g_display.printValue(msg);
+      b.print('.');
+    g_display.printValue(b.buf);
   }
 private:
   long m_relmillis;
   int m_secsLeft;
   bool m_overflow;
-  String m_displaySettings;
+  char m_displaySettings[LCD_LINE_SIZE];
 };
 
 class PhotoMode : public ModeEnc {
@@ -150,7 +127,7 @@ protected:
   void onTurn(int dir) override;
   void display();
   void nextStage();
-  void stopProcess(const String & reason);
+  void stopProcess(const __FlashStringHelper * reason);
   void updateMinMax();
 
 private:
@@ -170,7 +147,7 @@ private:
   
   PhotoStage * m_currentStageWorker;
   int m_framesShot;
-  String m_message;
+  const __FlashStringHelper * m_message = nullptr;
 
   int m_addition;
   long m_minPosition, m_maxPosition;

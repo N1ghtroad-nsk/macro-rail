@@ -1,6 +1,6 @@
 #include "MenuMode.h"
 #include "Globals.h"
-MenuMode::MenuMode(const String & title) :
+MenuMode::MenuMode(const __FlashStringHelper * title) :
   ModeEnc(title)
 {
 }
